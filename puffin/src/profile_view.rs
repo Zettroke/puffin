@@ -26,7 +26,8 @@ pub struct FrameView {
     /// Maintain stats as we add/remove frames
     stats: FrameStats,
 
-    scope_collection: ScopeCollection,
+    /// scope collection
+    pub scope_collection: ScopeCollection,
 }
 
 impl Default for FrameView {

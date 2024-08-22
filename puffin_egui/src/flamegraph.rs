@@ -124,6 +124,8 @@ pub struct Options {
     /// Visual settings for threads.
     pub flamegraph_threads: IndexMap<String, ThreadVisualizationSettings>,
 
+    pub hovered_scope_data: Option<String>,
+
     /// Interval of vertical timeline indicators.
     grid_spacing_micros: f64,
 
@@ -162,6 +164,8 @@ impl Default for Options {
 
             zoom_to_relative_ns_range: None,
             flamegraph_threads: IndexMap::new(),
+
+            hovered_scope_data: None,
         }
     }
 }
@@ -412,6 +416,7 @@ fn ui_canvas(
                 }
                 Ok(())
             };
+
 
             if let Err(err) = paint_streams() {
                 let text = format!("Profiler stream error: {err:?}");
@@ -779,6 +784,9 @@ fn paint_scope(
             let Some(scope_details) = info.scope_collection.fetch_by_id(&scope.id) else {
                 return Ok(PaintResult::Culled);
             };
+
+            options.hovered_scope_data = Some(scope.record.data.to_string());
+
             egui::show_tooltip_at_pointer(
                 &info.ctx,
                 info.layer_id,
