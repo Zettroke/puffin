@@ -181,8 +181,24 @@ impl Stream {
         // Future-proof: we may want to use VLQs later.
         const MAX_STRING_LENGTH: usize = 127;
         let len = s.len().min(MAX_STRING_LENGTH);
+
+        fn slice_up_to(s: &str, max_len: usize) -> &str {
+            if max_len >= s.len() {
+                return s;
+            }
+            let mut idx = max_len;
+            while !s.is_char_boundary(idx) {
+                idx -= 1;
+            }
+            &s[..idx]
+        }
+
+        let s = slice_up_to(s, len);
+        let len = s.len();
+
+
         self.0.write_u8(len as u8).expect("can't fail");
-        self.0.extend(s[0..len].as_bytes()); // This may split a character in two. The parser should handle that.
+        self.0.extend(s.as_bytes()); // This may split a character in two. The parser should handle that.
     }
 }
 
